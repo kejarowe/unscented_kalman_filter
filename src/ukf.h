@@ -11,6 +11,8 @@
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
+#define INITIAL_VARIANCE 1
+
 class UKF {
 public:
 
@@ -31,6 +33,15 @@ public:
 
   ///* predicted sigma points matrix
   MatrixXd Xsig_pred_;
+
+  ///* laser measurement matrix
+  MatrixXd H_laser_;
+
+  ///* laser covariance matrix
+  MatrixXd R_laser_;
+
+  ///* radar covariance matrix
+  MatrixXd R_radar_; 
 
   ///* time when the state is true, in us
   long long time_us_;
@@ -108,6 +119,19 @@ public:
    * @param meas_package The measurement at k+1
    */
   void UpdateRadar(MeasurementPackage meas_package);
+
+  MatrixXd AugmentedSigmaPoints();
+
+  MatrixXd SigmaPointPrediction(double delta_t);
+
+  void PredictMeanAndCovariance();
+
+  bool PredictRadarMeasurement(VectorXd* z_pred_out, MatrixXd* Zsig_pred_out, MatrixXd* S_pred_out);
+
+  void RadarUpdateState(VectorXd &z_pred, MatrixXd& Zsig_pred, MatrixXd& S_pred, VectorXd &z);
+
+  void NormalizeAngle(double &angle);
+
 };
 
 #endif /* UKF_H */
